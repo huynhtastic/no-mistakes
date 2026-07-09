@@ -22,6 +22,7 @@ agent_path_override:
   opencode: /usr/local/bin/opencode
   pi: /usr/local/bin/pi
   copilot: /usr/local/bin/copilot
+  antigravity: /usr/local/bin/agy
 
 agent_args_override:
   codex:
@@ -75,15 +76,16 @@ test:
 
 Default agent for all repos and setup-wizard suggestions. Can be overridden per-repo.
 
-|         |                                                                                             |
-| ------- | ------------------------------------------------------------------------------------------- |
-| Type    | `string` or `string[]`                                                                      |
-| Values  | `auto`, `claude`, `codex`, `rovodev`, `opencode`, `pi`, `copilot`, `cursor`, `acp:<target>` |
-| Default | `auto`                                                                                      |
+|         |                                                                                                           |
+| ------- | --------------------------------------------------------------------------------------------------------- |
+| Type    | `string` or `string[]`                                                                                    |
+| Values  | `auto`, `claude`, `codex`, `rovodev`, `opencode`, `pi`, `copilot`, `antigravity`, `cursor`, `acp:<target>` |
+| Default | `auto`                                                                                                    |
 
-`auto` resolves to the first supported native agent or ACP alias in this order: `claude`, `codex`, `opencode`, `acli` with `rovodev` support, `pi`, `copilot`, then `cursor`.
+`auto` resolves to the first supported native agent or ACP alias in this order: `claude`, `codex`, `opencode`, `acli` with `rovodev` support, `pi`, `copilot`, then `antigravity`, then `cursor`.
+`antigravity` is a native agent that runs the `agy` binary.
 `cursor` is an ACP alias for the `cursor` target with default command `cursor-agent acp`.
-With default paths, `auto` only selects it when both `cursor-agent` and `acpx` resolve; `acp_registry_overrides.cursor` and `acpx_path` replace those respective defaults during availability checks.
+With default paths, `auto` only selects `cursor` when both `cursor-agent` and `acpx` resolve; `acp_registry_overrides.cursor` and `acpx_path` replace those respective defaults during availability checks.
 `acp:<target>` uses the user-installed `acpx` binary to run an ACP target, for example `acp:gemini`; `acp:cursor` uses the same default command as `cursor`.
 Arbitrary `acp:<target>` agents are opt-in and are not considered by `agent: auto`.
 The effective agent configuration must resolve to a runnable runner before a new validation gate starts.
@@ -153,6 +155,7 @@ Default native binary names when no override is set:
 | `opencode` | `opencode` |
 | `pi`       | `pi`       |
 | `copilot`  | `copilot`  |
+| `antigravity` | `agy`   |
 
 ### agent_args_override
 
@@ -162,7 +165,7 @@ Use this to set model selection, service tier, reasoning effort, permission mode
 |         |                                                           |
 | ------- | --------------------------------------------------------- |
 | Type    | `map[string][]string`                                     |
-| Keys    | `claude`, `codex`, `rovodev`, `opencode`, `pi`, `copilot` |
+| Keys    | `claude`, `codex`, `rovodev`, `opencode`, `pi`, `copilot`, `antigravity` |
 | Default | Empty (no extra flags)                                    |
 
 User-supplied flags are normally inserted ahead of no-mistakes' managed flags, so your choices usually take precedence. Security suppression selected by trusted [`disable_project_settings`](/no-mistakes/reference/repo-config/#disable_project_settings) may be placed first while preserving a compatible operator pin. A few flags are reserved because no-mistakes depends on them to communicate with the agent - setting any of these returns a config error on load:
@@ -175,6 +178,7 @@ User-supplied flags are normally inserted ahead of no-mistakes' managed flags, s
 | `opencode` | `serve`, `--hostname`, `--port`, `--print-logs`                                                             |
 | `pi`       | `--mode`, `--no-session`                                                                                    |
 | `copilot`  | `-p`, `--prompt`, `--output-format`, `--no-color`                                                          |
+| `antigravity` | `-p`, `--print`, `--prompt`, `--dangerously-skip-permissions`                                           |
 
 For structured `codex` runs, no-mistakes also appends its own `--output-schema <tempfile>` after your overrides. Treat that flag as managed even though config validation does not currently reject it.
 The Claude and Codex session-control forms are reserved so no-mistakes can keep review-loop conversations deterministic: review turns stay session-free while the fixer keeps its own isolated durable session.

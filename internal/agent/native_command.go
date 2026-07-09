@@ -135,6 +135,9 @@ func (c *nativeAgentCommand) waitAfterParseError(parseErr error) error {
 	if errors.Is(waitErr, exec.ErrWaitDelay) {
 		return waitErr
 	}
+	if waitErr != nil {
+		return waitErr
+	}
 	return parseErr
 }
 

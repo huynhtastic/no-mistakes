@@ -47,6 +47,7 @@ That directory is always temporary and outside the worktree; GitHub repos can op
 | OpenCode | `opencode` | Persistent HTTP server, SSE streaming |
 | Pi | `pi` | Subprocess per invocation, JSONL events |
 | Copilot | `copilot` | Subprocess per invocation, JSONL events |
+| Antigravity | `agy` | Subprocess per invocation, plain text stdout |
 | Cursor | `cursor-agent` + `acpx` | `cursor-agent acp` through the ACP bridge |
 | ACP target | `acpx` | Optional user-installed ACP bridge |
 
@@ -288,6 +289,13 @@ Any `agent_args_override.copilot` flags are inserted before no-mistakes' managed
 Reads JSONL events from stdout, streaming incremental `assistant.message_delta` text to the TUI and capturing the final `assistant.message` content.
 The Copilot CLI has no output-schema flag, so when structured output is requested no-mistakes injects the JSON schema into the prompt and validates the final text response with the same JSON fence and bare-object fallback used by Pi and Rovo Dev.
 
+## Antigravity CLI
+
+Spawns an `agy` subprocess for each invocation with `-p <prompt> --dangerously-skip-permissions`.
+Any `agent_args_override.antigravity` flags are inserted before no-mistakes' managed flags, so user choices such as `--model` or `--mode` take effect.
+Reads plain text output from stdout and streams it to the TUI.
+When structured output is requested, no-mistakes injects the JSON schema into the prompt and validates the final text response with the same JSON fence and bare-object fallback used by Pi and Copilot.
+
 ## ACP aliases
 
 ACP aliases are first-class agent names that resolve to ACP targets.
@@ -325,6 +333,7 @@ $ no-mistakes doctor
   – opencode (not found)
   – pi (not found)
   – copilot (not found)
+  – antigravity (not found)
   – acpx (not found)
   – cursor (not found (cursor-agent, acpx))
   ✓ gate validation claude is runnable
